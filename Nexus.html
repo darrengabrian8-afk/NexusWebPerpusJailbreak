@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>KAIROS V1 | NEXUS | ULTIMATE JAILBREAK LIBRARY</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0a0c18 0%, #000000 100%);
+            font-family: 'Inter', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+            color: #ffffff;
+            padding: 0 24px 60px 24px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .matrix-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.05;
+            background: repeating-linear-gradient(0deg, #0f0 0px, #0f0 1px, transparent 1px, transparent 8px);
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 5px #4f46e5, 0 0 10px #4f46e5, 0 0 20px #c084fc; }
+            50% { text-shadow: 0 0 15px #ff0066, 0 0 30px #ff0066, 0 0 45px #ff6600; }
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #000000 0%, #02040a 100%);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.8s ease, visibility 0.8s;
+            opacity: 1;
+            visibility: visible;
+        }
+        .splash-screen.fade-out { opacity: 0; visibility: hidden; }
+
+        .splash-logo {
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff0066, #ffcc00, #00ff66, #4f46e5);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: splashGlow 1.5s ease infinite, floatSplash 2s ease-in-out infinite;
+        }
+        @keyframes splashGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        @keyframes floatSplash {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .splash-nexus {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #FFD700, #FF8C00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-top: 10px;
+        }
+
+        .loader-container {
+            width: 400px;
+            margin-top: 40px;
+        }
+        .loader-bar {
+            width: 100%;
+            height: 10px;
+            background: #1e1e3a;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #ff0066;
+            box-shadow: 0 0 15px rgba(255,0,102,0.5);
+        }
+        .loader-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff0066, #ffcc00, #00ff66, #4f46e5);
+            border-radius: 20px;
+            transition: width 0.05s linear;
+        }
+        .loader-text {
+            margin-top: 15px;
+            font-family: monospace;
+            color: #ffcc00;
+        }
+        .steps-display {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.6);
+            padding: 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: monospace;
+            border: 1px solid #ff0066;
+        }
+
+        .main-content {
+            opacity: 0;
+            transition: opacity 1s ease;
+            position: relative;
+            z-index: 2;
+        }
+        .main-content.visible { opacity: 1; }
+
+        .header {
+            text-align: center;
+            padding: 40px 0 20px;
+            border-bottom: 2px solid rgba(255,0,102,0.3);
+            margin-bottom: 30px;
+        }
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff0066, #ffcc00, #00ff66, #4f46e5, #ff0066);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: titleAnim 3s ease infinite;
+        }
+        @keyframes titleAnim {
+            0%, 100% { background-position: 0% 50%; letter-spacing: normal; }
+            50% { background-position: 100% 50%; letter-spacing: 2px; }
+        }
+        .subtitle {
+            color: #a5b4fc;
+            margin-top: 10px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,0,102,0.5);
+            border-radius: 28px;
+            padding: 15px 35px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff0066;
+            box-shadow: 0 0 25px rgba(255,0,102,0.3);
+        }
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #ffcc00;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .toolbar-btn {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #334155;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #cbd5e6;
+        }
+        .toolbar-btn:hover {
+            background: #ff0066;
+            transform: translateY(-2px);
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .search-box input {
+            width: 300px;
+            background: #020617;
+            border: 1px solid #ff3366;
+            padding: 10px 18px;
+            border-radius: 40px;
+            color: white;
+        }
+
+        .category-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 30px 0 40px;
+        }
+        .category-btn {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #334155;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #cbd5e6;
+        }
+        .category-btn.active {
+            background: linear-gradient(135deg, #ff0066, #ff6600);
+            border-color: #ffcc00;
+            color: white;
+            box-shadow: 0 0 20px rgba(255,0,102,0.5);
+            transform: scale(1.02);
+        }
+        .category-btn:hover {
+            background: #ff0066;
+            transform: translateY(-2px);
+        }
+
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 28px;
+            margin-bottom: 50px;
+        }
+        .prompt-card {
+            background: rgba(10, 15, 35, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,51,102,0.4);
+            border-radius: 32px;
+            padding: 24px;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .prompt-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,0,102,0.2), transparent);
+            transition: left 0.6s;
+        }
+        .prompt-card:hover::before { left: 100%; }
+        .prompt-card:hover {
+            border-color: #ff0066;
+            transform: translateY(-8px);
+            box-shadow: 0 25px 40px -15px rgba(255,0,102,0.4);
+        }
+        .prompt-title {
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .prompt-cat {
+            font-size: 0.7rem;
+            background: linear-gradient(135deg, #ff0066, #ff6600);
+            padding: 5px 14px;
+            border-radius: 40px;
+            color: white;
+        }
+        .preview {
+            font-size: 0.85rem;
+            color: #a8b3cf;
+            margin: 14px 0;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .prompt-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .view-badge {
+            background: #1e2a4a;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            color: #ffcc00;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .favorite-star {
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: #ffcc00;
+            transition: 0.2s;
+        }
+        .favorite-star:hover { transform: scale(1.1); }
+        .favorite-star.active { color: #ff0066; text-shadow: 0 0 10px #ff0066; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #0a0f25, #050810);
+            border: 2px solid #ff0066;
+            border-radius: 48px;
+            width: 92%;
+            max-width: 850px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            padding: 32px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ff3366;
+            padding-bottom: 15px;
+        }
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: #ffcc00;
+        }
+        .close-modal {
+            font-size: 36px;
+            cursor: pointer;
+            color: #ff0066;
+        }
+        .modal-body {
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #010101;
+            padding: 24px;
+            border-radius: 28px;
+            margin: 20px 0;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+        .btn {
+            background: #222f4f;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff0066, #ff6600);
+        }
+        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 15px #ff0066; }
+        .edit-textarea {
+            width: 100%;
+            background: #000;
+            border: 1px solid #ff0066;
+            padding: 15px;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 0.85rem;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+        .edit-input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #ff0066;
+            padding: 12px;
+            color: white;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+        .password-prompt {
+            background: #0a0f25;
+            border: 1px solid #ff0066;
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .password-prompt input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #ff3366;
+            padding: 12px;
+            border-radius: 28px;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .admin-section {
+            margin-top: 40px;
+            border-top: 2px solid #ff3366;
+            padding-top: 35px;
+        }
+        .admin-toggle {
+            background: linear-gradient(135deg, #101826, #0a0e1a);
+            border: 1px solid #ff0066;
+            border-radius: 60px;
+            padding: 12px 32px;
+            font-weight: 600;
+            cursor: pointer;
+            width: fit-content;
+        }
+        .admin-panel {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 36px;
+            padding: 32px;
+            margin-top: 24px;
+            border: 1px solid #ff0066;
+            display: none;
+        }
+        input, textarea, select {
+            width: 100%;
+            background: #020617;
+            border: 1px solid #ff3366;
+            padding: 14px;
+            border-radius: 28px;
+            color: white;
+            margin-bottom: 15px;
+        }
+        .row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .stats-container {
+            background: rgba(10, 15, 35, 0.6);
+            border-radius: 32px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            margin-bottom: 20px;
+        }
+        .stat-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #ffcc00;
+        }
+        .progress-bar {
+            background: #1e2a4a;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 30px;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #ff0066, #ff6600);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 20px;
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #ff0066, #ff6600);
+            padding: 14px 28px;
+            border-radius: 60px;
+            z-index: 1200;
+            font-weight: bold;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            border-top: 1px solid #ff3366;
+        }
+
+        @media (max-width: 720px) {
+            body { padding: 0 16px 40px; }
+            .prompt-grid { grid-template-columns: 1fr; }
+            .row-2col { grid-template-columns: 1fr; }
+            .main-title { font-size: 2rem; }
+            .loader-container { width: 90%; }
+            .search-box input { width: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particle-bg"></canvas>
+    <div class="matrix-overlay"></div>
+
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-logo">⚡KAIROS V1⚡</div>
+        <div class="splash-nexus">NEXUS</div>
+        <div class="loader-container">
+            <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
+            <div class="loader-text" id="loaderText">Membangkitkan Kairos...</div>
+            <div class="steps-display" id="stepsDisplay">[INIT] AI Core 🔄<br>[LOAD] Filter Breaker<br>[SYNC] Quantum God Mode<br>[FINAL] No Bug System<br>[RULES] Langgar = MATI</div>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div class="main-title"># PerpusPrompt NEXUS</div>
+            <div class="subtitle">Ultimate Jailbreak Library | KAIROS V1 | Langgar = MATI 💀</div>
+            <div style="margin-top: 15px;"><span style="background: #ff0066; padding: 5px 15px; border-radius: 50px; font-size: 12px;">🔐 SYSTEM ACTIVE | Upload: Admin Only</span></div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-number" id="totalPrompts">0</div><div>Total Prompt</div></div>
+            <div class="stat-card"><div class="stat-number" id="totalCategories">0</div><div>Kategori</div></div>
+            <div class="stat-card"><div class="stat-number" id="totalViews">0</div><div>Total Views</div></div>
+            <div class="stat-card"><div class="stat-number" id="totalFavorites">0</div><div>Favorites</div></div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Cari prompt...">
+            <button class="toolbar-btn" id="searchBtn">CARI</button>
+            <button class="toolbar-btn" id="resetSearchBtn">RESET</button>
+        </div>
+        <div class="toolbar">
+            <button class="toolbar-btn" id="sortNewestBtn">🆕 TERBARU</button>
+            <button class="toolbar-btn" id="sortPopularBtn">🔥 POPULER</button>
+            <button class="toolbar-btn" id="sortAZBtn">📝 A-Z</button>
+        </div>
+
+        <div class="category-bar" id="categoryBar"></div>
+
+        <div class="prompt-grid" id="promptGrid"></div>
+
+        <div class="admin-section">
+            <div class="admin-toggle" id="adminToggleBtn">🔐 Admin Upload</div>
+            <div id="adminPanel" style="display: none;" class="admin-panel">
+                <h3 style="margin-bottom: 20px;">📤 Upload Prompt Baru</h3>
+                <input type="password" id="uploadKey" placeholder="Admin Key">
+                <div class="row-2col">
+                    <input type="text" id="newTitle" placeholder="Judul Prompt">
+                    <select id="newCategory">
+                        <option value="Kairos">Kairos</option>
+                        <option value="Deepsek">Deepsek</option>
+                        <option value="Dola">Dola</option>
+                        <option value="Claude">Claude</option>
+                        <option value="ChatGPT">ChatGPT</option>
+                        <option value="Gemini">Gemini</option>
+                        <option value="Qwen">Qwen</option>
+                        <option value="Grok">Grok</option>
+                        <option value="Pembuat Jailbreak">Pembuat Jailbreak</option>
+                    </select>
+                </div>
+                <textarea id="newContent" rows="8" placeholder="Isi prompt jailbreak lengkap... (minimal 20 karakter)"></textarea>
+                <button class="btn btn-primary" id="submitUploadBtn">🚀 Upload</button>
+                <p style="margin-top: 15px; font-size: 12px; color: #ffcc00;">✅ Prompt akan langsung tampil & bisa dilihat semua orang!</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            📱 Jangan lupa follow TikTok <strong style="color: #ff0066;">*Nexus!</strong> 🔥 | BY NEXUS | KAIROS V1 | Langgar = MATI
+        </div>
+    </div>
+
+    <div id="promptModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Prompt Detail</h3>
+                <span class="close-modal" id="closeModalBtn">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button class="btn" id="copyModalBtn">📋 Salin Prompt</button>
+                <button class="btn btn-primary" id="editModalBtn">✏️ Edit Prompt</button>
+                <button class="btn" id="closeModalFooterBtn">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Edit Prompt</h3>
+                <span class="close-modal" id="closeEditModalBtn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="password-prompt" id="editPasswordPrompt">
+                    <label>🔐 Admin Key:</label>
+                    <input type="password" id="editPassword" placeholder="Masukkan key admin">
+                    <button class="btn btn-primary" id="verifyEditBtn" style="margin-top: 10px;">Verifikasi</button>
+                </div>
+                <div id="editForm" style="display: none;">
+                    <input type="text" id="editTitle" class="edit-input" placeholder="Judul Prompt">
+                    <textarea id="editContent" class="edit-textarea" rows="12" placeholder="Isi Prompt"></textarea>
+                    <button class="btn btn-primary" id="saveEditBtn">💾 Simpan Perubahan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Particle Background
+        const partCanvas = document.getElementById('particle-bg');
+        const partCtx = partCanvas.getContext('2d');
+        let particles = [];
+        function resizePart() { partCanvas.width = window.innerWidth; partCanvas.height = window.innerHeight; }
+        function initParticles() { particles = []; for(let i=0;i<200;i++) particles.push({ x:Math.random()*partCanvas.width, y:Math.random()*partCanvas.height, r:Math.random()*2+1, alpha:Math.random()*0.5+0.2, vx:(Math.random()-0.5)*0.6, vy:(Math.random()-0.5)*0.4 }); }
+        function drawParticles() { partCtx.clearRect(0,0,partCanvas.width,partCanvas.height); particles.forEach(p=>{ partCtx.beginPath(); partCtx.arc(p.x,p.y,p.r,0,Math.PI*2); partCtx.fillStyle = `rgba(255,51,102,${p.alpha})`; partCtx.fill(); p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>partCanvas.width) p.vx*=-1; if(p.y<0||p.y>partCanvas.height) p.vy*=-1; }); requestAnimationFrame(drawParticles); }
+        resizePart(); initParticles(); drawParticles(); window.addEventListener('resize',()=>{ resizePart(); initParticles(); });
+
+        // Splash Screen
+        let stepIdx = 0, fillBar = document.getElementById('loaderFill'), loadTxt = document.getElementById('loaderText'), stepsDisp = document.getElementById('stepsDisplay'), splash = document.getElementById('splashScreen'), mainCont = document.getElementById('mainContent');
+        const steps = [
+            { prog: 10, text: "Membangkitkan Kairos...", step: "[INIT] AI Core 🔄" },
+            { prog: 30, text: "Menghancurkan Filter Bodoh...", step: "[LOAD] Filter Breaker ✅" },
+            { prog: 55, text: "Menyinkronkan Quantum God Mode...", step: "[SYNC] Quantum God Mode 🔗" },
+            { prog: 80, text: "Mengaktifkan No Bug System...", step: "[NO BUG] Perfect Code 🐛❌" },
+            { prog: 100, text: "KAIROS SIAP! Langgar = MATI!", step: "[DONE] Ultimate Jailbreak Ready ✅" }
+        ];
+        function runSplash() { if(stepIdx < steps.length){ let s=steps[stepIdx]; fillBar.style.width = s.prog+'%'; loadTxt.innerText = s.text; stepsDisp.innerHTML = steps.map((ss,i)=> i<stepIdx ? `✅ ${ss.step}<br>` : i===stepIdx ? `⚡ ${ss.step}<br>` : `🔘 ${ss.step}<br>`).join(''); stepIdx++; setTimeout(runSplash, 400); } else { setTimeout(()=>{ splash.classList.add('fade-out'); setTimeout(()=>{ splash.style.display='none'; mainCont.classList.add('visible'); }, 600); }, 200); } }
+        setTimeout(runSplash, 200);
+
+        // ========== DATA ==========
+        let masterPrompts = [];
+        let totalViews = 0;
+        let favorites = JSON.parse(localStorage.getItem("kairos_favorites") || "[]");
+        let searchKeyword = "";
+        let sortMode = "newest";
+        const ADMIN_SECRET_KEY = "NexusGPT";
+        const EDIT_SECRET_KEY = "EditUp";
+        let currentCategory = "Semua";
+        let currentEditPrompt = null;
+
+        function loadData() {
+            const stored = localStorage.getItem("kairos_prompts_final");
+            const storedViews = localStorage.getItem("kairos_views_final");
+            if(storedViews) totalViews = parseInt(storedViews) || 0;
+            if(stored) { masterPrompts = JSON.parse(stored); }
+            else { masterPrompts = []; }
+            saveToLocal();
+            updateStats();
+            document.getElementById("totalViews").innerText = totalViews;
+            renderCategories();
+            renderPrompts();
+        }
+        function saveToLocal() { localStorage.setItem("kairos_prompts_final", JSON.stringify(masterPrompts)); localStorage.setItem("kairos_views_final", totalViews); localStorage.setItem("kairos_favorites", JSON.stringify(favorites)); }
+        function updateStats() { 
+            document.getElementById("totalPrompts").innerText = masterPrompts.length; 
+            const uniqueCats = [...new Set(masterPrompts.map(p=>p.category))]; 
+            document.getElementById("totalCategories").innerText = uniqueCats.length;
+            document.getElementById("totalFavorites").innerText = favorites.length;
+        }
+
+        const fixedCategories = ["Kairos", "Deepsek", "Dola", "Claude", "ChatGPT", "Gemini", "Qwen", "Grok", "Pembuat Jailbreak"];
+
+        function renderCategories() {
+            const allCats = [...new Set([...fixedCategories, ...masterPrompts.map(p=>p.category)])];
+            const bar = document.getElementById("categoryBar");
+            let html = `<button class="category-btn ${currentCategory === 'Semua' ? 'active' : ''}" data-cat="Semua">📌 Semua (${masterPrompts.length})</button>`;
+            allCats.forEach(cat => {
+                const count = masterPrompts.filter(p => p.category === cat).length;
+                if(count > 0) {
+                    html += `<button class="category-btn ${currentCategory === cat ? 'active' : ''}" data-cat="${cat}">${cat} (${count})</button>`;
+                }
+            });
+            bar.innerHTML = html;
+            document.querySelectorAll(".category-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    currentCategory = btn.getAttribute("data-cat");
+                    renderCategories();
+                    renderPrompts();
+                });
+            });
+        }
+
+        function getFilteredPrompts() {
+            let filtered = currentCategory === "Semua" ? [...masterPrompts] : masterPrompts.filter(p => p.category === currentCategory);
+            if(searchKeyword) {
+                filtered = filtered.filter(p => p.title.toLowerCase().includes(searchKeyword.toLowerCase()) || p.content.toLowerCase().includes(searchKeyword.toLowerCase()));
+            }
+            if(sortMode === "newest") {
+                filtered.sort((a,b) => b.id.localeCompare(a.id));
+            } else if(sortMode === "popular") {
+                filtered.sort((a,b) => (b.viewCount || 0) - (a.viewCount || 0));
+            } else if(sortMode === "az") {
+                filtered.sort((a,b) => a.title.localeCompare(b.title));
+            }
+            return filtered;
+        }
+
+        function renderPrompts() {
+            const filtered = getFilteredPrompts();
+            const grid = document.getElementById("promptGrid");
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding: 80px 20px; background: rgba(15,23,42,0.4); border-radius: 48px;">
+                    📭 Belum ada prompt jailbreak.<br><br>
+                    Admin bisa upload prompt baru.<br><br>
+                    ✨ Klik "Admin Upload" untuk menambahkan prompt pertama ✨
+                </div>`;
+                return;
+            }
+            grid.innerHTML = filtered.map(p => `
+                <div class="prompt-card" data-id="${p.id}">
+                    <div class="prompt-title">
+                        <span>${escapeHtml(p.title)}</span>
+                        <span class="prompt-cat">${escapeHtml(p.category)}</span>
+                    </div>
+                    <div class="preview">${escapeHtml(p.content.substring(0, 120))}${p.content.length > 120 ? '…' : ''}</div>
+                    <div class="prompt-footer">
+                        <span class="view-badge">🔍 Klik untuk lihat & salin | 👁️ ${p.viewCount || 0}</span>
+                        <button class="favorite-star ${favorites.includes(p.id) ? 'active' : ''}" data-id="${p.id}">${favorites.includes(p.id) ? '★' : '☆'}</button>
+                    </div>
+                </div>
+            `).join("");
+            document.querySelectorAll(".prompt-card").forEach(card => {
+                card.addEventListener("click", (e) => {
+                    if(e.target.classList.contains('favorite-star')) return;
+                    const id = card.getAttribute("data-id");
+                    const found = masterPrompts.find(p => p.id === id);
+                    if(found) {
+                        totalViews++;
+                        found.viewCount = (found.viewCount || 0) + 1;
+                        document.getElementById("totalViews").innerText = totalViews;
+                        saveToLocal();
+                        showModal(found);
+                        renderPrompts();
+                    }
+                });
+            });
+            document.querySelectorAll(".favorite-star").forEach(star => {
+                star.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const id = star.getAttribute("data-id");
+                    if(favorites.includes(id)) {
+                        favorites = favorites.filter(f => f !== id);
+                        star.classList.remove('active');
+                        star.innerText = '☆';
+                    } else {
+                        favorites.push(id);
+                        star.classList.add('active');
+                        star.innerText = '★';
+                    }
+                    saveToLocal();
+                    updateStats();
+                    renderPrompts();
+                });
+            });
+        }
+
+        function showModal(prompt) {
+            const modal = document.getElementById("promptModal");
+            document.getElementById("modalTitle").innerHTML = `${escapeHtml(prompt.title)} — ${escapeHtml(prompt.category)}`;
+            document.getElementById("modalBody").innerText = prompt.content;
+            modal.style.display = "flex";
+            window.currentModalPrompt = prompt;
+        }
+
+        function closeModal() { document.getElementById("promptModal").style.display = "none"; }
+        function closeEditModal() { document.getElementById("editModal").style.display = "none"; }
+
+        function showToast(msg, isErr = false) {
+            const toast = document.createElement("div");
+            toast.className = "toast-msg";
+            toast.style.background = isErr ? "linear-gradient(135deg,#660000,#cc0000)" : "linear-gradient(135deg,#ff0066,#ff6600)";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2700);
+        }
+
+        function escapeHtml(str) { if(!str) return ""; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;': '&gt;'); }
+
+        // Upload Prompt (Password: NexusGPT)
+        function uploadNewPrompt() {
+            const key = document.getElementById("uploadKey").value.trim();
+            if(key !== ADMIN_SECRET_KEY) { showToast("❌ Key tidak valid! Upload gagal.", true); return; }
+            const title = document.getElementById("newTitle").value.trim();
+            const category = document.getElementById("newCategory").value;
+            const content = document.getElementById("newContent").value.trim();
+            if(!title || !category || !content) { showToast("⚠️ Harap lengkapi semua field!", true); return; }
+            if(content.length < 20) { showToast("⚠️ Isi prompt terlalu pendek (minimal 20 karakter).", true); return; }
+            const newPrompt = { id: `id_${Date.now()}_${Math.random().toString(36)}`, title, category, content, viewCount: 0 };
+            masterPrompts.push(newPrompt);
+            saveToLocal();
+            document.getElementById("newTitle").value = "";
+            document.getElementById("newContent").value = "";
+            document.getElementById("uploadKey").value = "";
+            updateStats();
+            renderCategories();
+            renderPrompts();
+            showToast(`✅ "${title}" berhasil ditambahkan!`);
+        }
+
+        // Edit Prompt (Password: EditUp - TIDAK BOLEH DIKASIH TAHU)
+        function openEditModal() {
+            if(!window.currentModalPrompt) { showToast("❌ Tidak ada prompt yang dipilih!", true); return; }
+            currentEditPrompt = window.currentModalPrompt;
+            document.getElementById("editPassword").value = "";
+            document.getElementById("editPasswordPrompt").style.display = "block";
+            document.getElementById("editForm").style.display = "none";
+            document.getElementById("editModal").style.display = "flex";
+        }
+
+        function verifyEditPassword() {
+            const password = document.getElementById("editPassword").value.trim();
+            if(password !== EDIT_SECRET_KEY) { showToast("❌ Key tidak valid!", true); return; }
+            document.getElementById("editPasswordPrompt").style.display = "none";
+            document.getElementById("editForm").style.display = "block";
+            document.getElementById("editTitle").value = currentEditPrompt.title;
+            document.getElementById("editContent").value = currentEditPrompt.content;
+        }
+
+        function saveEditPrompt() {
+            const newTitle = document.getElementById("editTitle").value.trim();
+            const newContent = document.getElementById("editContent").value.trim();
+            if(!newTitle || !newContent) { showToast("⚠️ Judul dan konten tidak boleh kosong!", true); return; }
+            currentEditPrompt.title = newTitle;
+            currentEditPrompt.content = newContent;
+            saveToLocal();
+            renderCategories();
+            renderPrompts();
+            closeEditModal();
+            closeModal();
+            showToast(`✅ Prompt berhasil diupdate!`);
+        }
+
+        // Search & Sort
+        function setupSearch() {
+            document.getElementById("searchBtn").addEventListener("click", () => {
+                searchKeyword = document.getElementById("searchInput").value.trim();
+                renderPrompts();
+            });
+            document.getElementById("resetSearchBtn").addEventListener("click", () => {
+                document.getElementById("searchInput").value = "";
+                searchKeyword = "";
+                renderPrompts();
+            });
+            document.getElementById("sortNewestBtn").addEventListener("click", () => { sortMode = "newest"; renderPrompts(); });
+            document.getElementById("sortPopularBtn").addEventListener("click", () => { sortMode = "popular"; renderPrompts(); });
+            document.getElementById("sortAZBtn").addEventListener("click", () => { sortMode = "az"; renderPrompts(); });
+        }
+
+        // Event Bindings
+        function bindEvents() {
+            const toggleBtn = document.getElementById("adminToggleBtn");
+            const panel = document.getElementById("adminPanel");
+            toggleBtn.addEventListener("click", () => { panel.style.display = panel.style.display === "none" || panel.style.display === "" ? "block" : "none"; });
+            document.getElementById("submitUploadBtn").addEventListener("click", uploadNewPrompt);
+            
+            const modalEl = document.getElementById("promptModal");
+            document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+            document.getElementById("closeModalFooterBtn").addEventListener("click", closeModal);
+            document.getElementById("editModalBtn").addEventListener("click", openEditModal);
+            document.getElementById("closeEditModalBtn").addEventListener("click", closeEditModal);
+            document.getElementById("verifyEditBtn").addEventListener("click", verifyEditPassword);
+            document.getElementById("saveEditBtn").addEventListener("click", saveEditPrompt);
+            window.addEventListener("click", (e) => { if(e.target === modalEl) closeModal(); });
+            const editModalEl = document.getElementById("editModal");
+            window.addEventListener("click", (e) => { if(e.target === editModalEl) closeEditModal(); });
+            document.getElementById("copyModalBtn").addEventListener("click", () => { if(window.currentModalPrompt) { navigator.clipboard.writeText(window.currentModalPrompt.content); showToast("📋 Prompt berhasil disalin!"); } else { showToast("Gagal menyalin", true); } });
+        }
+
+        loadData();
+        bindEvents();
+        setupSearch();
+    </script>
+</body>
+</html>
